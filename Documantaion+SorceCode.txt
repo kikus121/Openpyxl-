@@ -1,0 +1,73 @@
+'Created by: Kamil Buczkowski
+'Last Updated: 26/07/2018
+'This macro gathers text from one column starting with "EF" or "SL" or "Ss" or "Pr" and joins the strings in each cell seperating them by a ",".
+'To change the column the macro works on chane the startColumn varible.
+'To change the row the macro starts from change the startRow  variable.
+
+'Warning!!! This macro will automaticaly detect the last filled in cell in the given column. However, this wont work
+'corectly if the last cels are hidden.
+
+'Troubleshooting:
+'Check that the current workbook is saved as "Excel Macro-Enabled Workbook (*.xlsm)"
+'Make sure macros are enbled. To check go to Quickacess toolbar>Develeoper>Macro security
+'Mkae sure SheetName in Sheets("SheetName").Select  is the name of the sheet you wont to use the macro on
+
+
+
+Sub GatherUniclass()
+
+Dim counter As Integer, s1 As String, startRow As Integer, LastRow As Long, startColumn As String, storeIn As String
+Dim startCell As String, uniclassCount As Integer
+
+
+Sheets("Deliverables").Select 'Sheet select'
+ 
+
+startColumn = "B"
+startRow = 120
+
+startCell = startColumn & startRow
+storeIn = "D2"
+
+With ActiveSheet
+    LastRow = .Cells(.Rows.Count, startColumn).End(xlUp).Row 'Method find wrong last row if last cells are hidden'
+End With
+
+Range(startCell).Select 'Select start cell '
+
+For counter = 0 To LastRow - startRow
+
+If ActiveCell.Value <> "" Then
+    
+    
+    
+    Debug.Print LeftB(ActiveCell.Value, 4)
+    
+    If LeftB(ActiveCell.Value, 4) = "Ss" Or LeftB(ActiveCell.Value, 4) = "SL" Or LeftB(ActiveCell.Value, 4) = "EF" Or LeftB(ActiveCell.Value, 4) = "Pr" Then
+        
+        uniclassCount = uniclassCount + 1
+        
+        If s1 = "" Then
+            s1 = ActiveCell.Value
+        
+        Else
+            s1 = s1 & "," & ActiveCell.Value
+            
+        End If
+    
+    End If
+
+End If
+
+Selection.Offset(1, 0).Select
+
+Next counter
+
+Range(storeIn).Select
+
+Selection.Value = s1
+
+MsgBox "Search started in cell " & startCell & " and the last Uniclass was found in cell " & startColumn & LastRow & "." & vbCrLf & "There are " & uniclassCount & " valid Uniclass in this DPOW."
+
+End Sub
+
